@@ -1,0 +1,6 @@
+[submodule "packages/promise"]
+	path = packages/promise
+	url = https://github.com/evaera/roblox-lua-promise
+[submodule "packages/MockDataStoreService"]
+	path = packages/MockDataStoreService
+	url = https://github.com/buildthomas/MockDataStoreService

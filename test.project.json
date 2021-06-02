@@ -1,0 +1,33 @@
+{
+	"name": "Podu",
+	"tree": {
+		"$className": "DataModel",
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"Server": {
+				"$path": "example/Server.server.lua"
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"Client": {
+					"$path": "example/Client.client.lua"
+				}
+			}
+		},
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Podu": {
+				"$path": "src"
+			},
+			"Promise": {
+				"$path": "packages/promise"
+			},
+			"MockDataStoreService": {
+				"$path": "packages/MockDataStoreService"
+			}
+		}
+	}
+}
