@@ -1,10 +1,18 @@
 --!strict
 -- Roblox Services --
 local RunService = game:GetService('RunService')
-local DataStoreService = require(script.Parent.Parent.Parent.Parent.MockDataStoreService)
+
+local MockDataStoreService: ModuleScript? = script.Parent.Parent.Parent.Parent:FindFirstChild('MockDataStoreService')
+local DataStoreService
+if MockDataStoreService then
+	DataStoreService = require(MockDataStoreService)
+else
+	DataStoreService = game:GetService('DataStoreService')
+end
 
 -- Modules --
-local Promise = require(script.Parent.Parent.Parent.Parent.Promise)
+local ModuleManager = require(script.Parent.Parent.Parent.Shared.ModuleManager)
+local Promise
 
 -- Constants --
 local METHODS = {
@@ -13,11 +21,10 @@ local METHODS = {
 }
 
 -- Variables --
-type Promise = typeof(Promise.resolve())
 type pack = { [number]: string, n: number }
 type queueMember = {
-	resolve: (string | boolean) -> (Promise),
-	reject: (string | boolean) -> (Promise),
+	resolve: (string | boolean) -> (any),
+	reject: (string | boolean) -> (any),
 	args: pack,
 }
 
@@ -25,9 +32,14 @@ local purchaseHistory: GlobalDataStore = DataStoreService:GetDataStore('Purchase
 
 -- stylua: ignore
 local queue: {[Enum.DataStoreRequestType]: { queueMember }} = {}
+local callMethod
 
-local callMethod = Promise.promisify(function(method: string, ...)
-	return purchaseHistory[method](purchaseHistory, ...)
+ModuleManager:onModuleUpdate('Promise', function(newPromiseModule: ModuleScript)
+	Promise = newPromiseModule
+
+	callMethod = newPromiseModule.promisify(function(method: string, ...)
+		return purchaseHistory[method](purchaseHistory, ...)
+	end)
 end)
 
 return function(method: string, ...)

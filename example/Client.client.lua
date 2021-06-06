@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 
 local Podu = require(ReplicatedStorage.Podu)
+Podu:SetPromiseModule(ReplicatedStorage.Promise)
 
 -- User owns gamepass?
 Podu

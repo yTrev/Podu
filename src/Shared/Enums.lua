@@ -1,26 +1,19 @@
-local function lockEnum(enumName: string, values)
-	local function protected(_, key)
-		error(string.format('%q (%s) is not a valid member of %s', tostring(key), typeof(key), tostring(enumName)))
-	end
-
-	return setmetatable(values, {
-		__index = protected,
-		__newindex = protected,
-		__tostring = function()
-			return enumName
-		end,
-	})
-end
-
 local function enum(name: string, enums: { string })
 	local newEnum = {}
 
 	for _, memberName: string in pairs(enums) do
-		local longName: string = string.format('%s.%s', name, memberName)
-		newEnum[memberName] = longName
+		newEnum[memberName] = memberName
 	end
 
-	return lockEnum(name, newEnum)
+	return setmetatable(newEnum, {
+		__index = function(_, key)
+			error(string.format('%q (%s) is not a valid member of %s', tostring(key), typeof(key), name), 2)
+		end,
+
+		__newindex = function()
+			error(string.format('Creating new member in %q is not allowed!', name), 2)
+		end,
+	})
 end
 
 return {

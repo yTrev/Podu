@@ -5,21 +5,23 @@ local Players = game:GetService('Players')
 
 -- Modules --
 local Throttle = require(script.Parent.Utils.Throttle)
-local Promise = require(script.Parent.Parent.Parent.Promise)
 local Enums = require(script.Parent.Parent.Shared.Enums)
+local ModuleManager = require(script.Parent.Parent.Shared.ModuleManager)
+local Promise
 
 -- Variables --
 local waitingPromises: { [string]: WaitingPromise } = {}
 local promptResults = Enums.PromptResult
+local callbacks
 
 local purchaseGranted = Enum.ProductPurchaseDecision.PurchaseGranted
 local notProcessedYet = Enum.ProductPurchaseDecision.NotProcessedYet
 
-type Promise = typeof(Promise.resolve())
 type WaitingPromise = {
-	resolve: (any) -> Promise,
-	reject: () -> Promise,
+	resolve: (any) -> any,
+	reject: () -> any,
 }
+
 type ReceiptInfo = {
 	PlayerId: number,
 	PlaceIdWherePurchased: number,
@@ -31,9 +33,7 @@ type ReceiptInfo = {
 
 type ProductCallback = (ReceiptInfo) -> (boolean)
 
-local DevProductHandler = {
-	Callbacks = {},
-}
+local DevProductHandler = {}
 
 local function getId(userId: number, productId: number): string
 	return string.format('%d_%d', userId, productId)
@@ -58,8 +58,8 @@ function DevProductHandler._handle(player: Player, productId: number): Promise
 	end
 end
 
-function DevProductHandler:SetCallbacks(callbacks)
-	self.Callbacks = callbacks
+function DevProductHandler.SetCallbacks(newCallbacks)
+	callbacks = newCallbacks
 end
 
 do
@@ -98,7 +98,7 @@ do
 			return returnDecision(Enum.ProductPurchaseDecision.NotProcessedYet)
 		end
 
-		local callbackSuccess: boolean = pcall(DevProductHandler.Callbacks[receiptInfo.ProductId], receiptInfo, player)
+		local callbackSuccess: boolean, message: string? = pcall(callbacks[receiptInfo.ProductId], receiptInfo, player)
 		if callbackSuccess then
 			while player:IsDescendantOf(game) do
 				local setSuccess: boolean = Throttle('SetAsync', purchaseId, true)
@@ -109,6 +109,10 @@ do
 
 			return returnDecision(Enum.ProductPurchaseDecision.PurchaseGranted)
 		else
+			if message then
+				warn(string.format('An error occurred in the %q callback. Error: %s', receiptInfo.ProductId, message))
+			end
+
 			return returnDecision(Enum.ProductPurchaseDecision.NotProcessedYet)
 		end
 	end
@@ -141,5 +145,9 @@ do
 		end
 	end)
 end
+
+ModuleManager:onModuleUpdate('Promise', function(newPromiseModule: ModuleScript)
+	Promise = newPromiseModule
+end)
 
 return DevProductHandler

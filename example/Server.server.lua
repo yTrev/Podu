@@ -1,6 +1,9 @@
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
 local Players = game:GetService('Players')
 
 local Podu = require(game.ReplicatedStorage.Podu)
+Podu:SetPromiseModule(ReplicatedStorage.Promise)
+
 local PromptResult = Podu.Enums.PromptResult
 
 Players.PlayerAdded:Connect(function(player: Player)
