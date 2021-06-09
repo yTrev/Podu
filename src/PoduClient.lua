@@ -4,6 +4,8 @@
 	PoduClient:PromptPurchaseOf(productType: ProductType, productId: number): Promise
 	PoduClient:PromptDevProductPurchase(productId: number): Promise
 	PoduClient:GetProductInfo(assetId: number, infoType: Enum.InfoType): Promise
+
+	PoduClient:OnGamePassPurchase(callback: (player: Player, gamePassId: number, wasPurchased: boolean) -> ())
 ]]
 
 -- Roblox Services --
@@ -37,6 +39,10 @@ end
 
 function PoduClient:PromptDevProductPurchase(productId: number)
 	MarketplaceService:PromptProductPurchase(Player, productId)
+end
+
+function PoduClient:OnGamePassPurchase(callback)
+	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(callback)
 end
 
 function PoduClient:SetPromiseModule(promiseModule: ModuleScript | any)
