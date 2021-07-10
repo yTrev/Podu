@@ -2,7 +2,7 @@
 --[[
 	PoduClient:OwnsGamePass(gamePassId: number): Promise
 	PoduClient:PromptPurchaseOf(productType: ProductType, productId: number): Promise
-	PoduClient:PromptDevProductPurchase(productId: number): Promise
+	PoduClient:PromptDevProductPurchase(productId: number)
 	PoduClient:GetProductInfo(assetId: number, infoType: Enum.InfoType): Promise
 
 	PoduClient:OnGamePassPurchase(callback: (player: Player, gamePassId: number, wasPurchased: boolean) -> ())
