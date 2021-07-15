@@ -17,6 +17,6 @@ local function enum(name: string, enums: { string })
 end
 
 return {
-	ProductType = enum('ProductType', { 'Gamepass' }),
+	ProductType = enum('ProductType', { 'GamePass' }),
 	PromptResult = enum('PromptResult', { 'Purchased', 'Cancelled', 'Denied', 'AlreadyPurchased', 'Failed' }),
 }
